@@ -1,0 +1,41 @@
+commit 8dbab7d48cb1422251bb6defc595a82fbb44b5db
+Merge: 18af03d 785957a
+Author: Livshyts Diana <Diana.Livshyts@cs.khpi.edu.ua>
+Date:   Tue May 19 01:09:29 2026 +0300
+
+    Merge pull request #2 from livshyts-diana/dev
+    
+    Створення нового pull request
+
+commit 785957a00d83eebce393b71ec5960fdb313356bb
+Merge: f6e85a9 fb60ccc
+Author: Livshyts Diana <Diana.Livshyts@cs.khpi.edu.ua>
+Date:   Tue May 19 01:07:20 2026 +0300
+
+    Merge pull request #1 from livshyts-diana/livshyts-diana-new_feature
+    
+    Створення pull request
+
+commit fb60cccdfed499df6fd3357e85636411e0186bf0
+Author: Diana Livshyts <diana.livshyts@cs.khpi.edu.ua>
+Date:   Tue May 19 01:01:59 2026 +0300
+
+    Додано .gitignore
+
+commit e246180d9c89bf9fbdf165da16e452c1d051c619
+Author: Diana Livshyts <diana.livshyts@cs.khpi.edu.ua>
+Date:   Tue May 19 00:57:38 2026 +0300
+
+    Додано новий файл README
+
+commit f6e85a91109df1ed0784f93d10ac82eb08cffe01
+Author: Diana Livshyts <diana.livshyts@cs.khpi.edu.ua>
+Date:   Tue May 19 00:53:52 2026 +0300
+
+    Додано тестовий файл
+
+commit 18af03d1cc8c0500b43c6232f4a9aa9c9424580f
+Author: Diana Livshyts <diana.livshyts@cs.khpi.edu.ua>
+Date:   Tue May 19 00:51:42 2026 +0300
+
+    Створено папку Task1 та файл README
