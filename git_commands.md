@@ -1,0 +1,7 @@
+- git clone
+- git add / git commit / git push
+- git checkout -b
+- git status
+- git reset HEAD~1
+- git log > log.txt
+- git branch -D / git push origin --delete
