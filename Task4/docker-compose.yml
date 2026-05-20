@@ -1,0 +1,29 @@
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  java-app:
+    image: eclipse-temurin:17-alpine
+    command: sh -c "echo 'Connecting to DB...'; sleep 2; echo 'Java Application started successfully!'"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    build: .
+    image: reuweak/nginx-custom:latest
+    environment:
+      DEVOPS: ${DEVOPS_USER}
+    ports:
+      - "8080-8082:80"
+    deploy:
+      replicas: ${REPLICAS_COUNT}
