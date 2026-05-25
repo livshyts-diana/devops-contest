@@ -1,0 +1,65 @@
+---
+- name: Deploy Infrastructure with Docker and WordPress Stack on Amazon Linux
+  hosts: all
+  become: true
+  vars_files:
+    - vars/secrets.yml
+
+  tasks:
+    - name: Install Docker and requirements via DNF
+      dnf:
+        name:
+          - docker
+          - python3-pip
+        state: present
+        update_cache: true
+
+    - name: Install Docker SDK for Python
+      pip:
+        name: docker
+        state: present
+        extra_args: --break-system-packages
+
+    - name: Enable and start Docker service
+      service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Generate production environment configuration via Jinja2
+      template:
+        src: templates/wp_env.j2
+        dest: /opt/.env
+        mode: "0600"
+
+    - name: Create isolated Docker network for microservices
+      community.docker.docker_network:
+        name: wp_network
+
+    - name: Deploy MySQL Database Container
+      community.docker.docker_container:
+        name: mysql_db
+        image: mysql:8.0
+        networks:
+          - name: wp_network
+        env:
+          MYSQL_ROOT_PASSWORD: "{{ mysql_root_password }}"
+          MYSQL_DATABASE: "{{ mysql_database }}"
+          MYSQL_USER: "{{ mysql_user }}"
+          MYSQL_PASSWORD: "{{ mysql_password }}"
+        restart_policy: always
+
+    - name: Deploy WordPress Web Application Container
+      community.docker.docker_container:
+        name: wordpress_app
+        image: wordpress:latest
+        networks:
+          - name: wp_network
+        ports:
+          - "80:80"
+        env:
+          WORDPRESS_DB_HOST: mysql_db
+          WORDPRESS_DB_USER: "{{ mysql_user }}"
+          WORDPRESS_DB_PASSWORD: "{{ mysql_password }}"
+          WORDPRESS_DB_NAME: "{{ mysql_database }}"
+        restart_policy: always
