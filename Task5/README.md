@@ -29,4 +29,4 @@
 
 export TARGET1_IP="твоя_ip_адреса_1"
 
-export TARGET2_IP="твоя_ip_адреса_2"cat << 'EOF' > README.md
+export TARGET2_IP="твоя_ip_адреса_2"
