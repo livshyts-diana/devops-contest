@@ -7,7 +7,7 @@
 
   tasks:
     - name: Install Docker and requirements via DNF
-      dnf:
+      ansible.builtin.dnf:
         name:
           - docker
           - python3-pip
@@ -15,21 +15,27 @@
         update_cache: true
 
     - name: Install Docker SDK for Python
-      pip:
+      ansible.builtin.pip:
         name: docker
         state: present
         extra_args: --break-system-packages
 
     - name: Enable and start Docker service
-      service:
+      ansible.builtin.service:
         name: docker
         state: started
         enabled: true
 
+    - name: Ensure deployment directory exists
+      ansible.builtin.file:
+        path: /opt/wordpress
+        state: directory
+        mode: "0755"
+
     - name: Generate production environment configuration via Jinja2
-      template:
+      ansible.builtin.template:
         src: templates/wp_env.j2
-        dest: /opt/.env
+        dest: /opt/wordpress/.env
         mode: "0600"
 
     - name: Create isolated Docker network for microservices
@@ -47,7 +53,15 @@
           MYSQL_DATABASE: "{{ mysql_database }}"
           MYSQL_USER: "{{ mysql_user }}"
           MYSQL_PASSWORD: "{{ mysql_password }}"
+          # Оптимізація для надійності:
+          MYSQL_CONCURRENT_CONNECTIONS: "100"
+        volumes:
+          - mysql_data:/var/lib/mysql
         restart_policy: always
+
+    - name: Wait for MySQL to be ready (Healthcheck pause)
+      ansible.builtin.pause:
+        seconds: 15
 
     - name: Deploy WordPress Web Application Container
       community.docker.docker_container:
@@ -62,4 +76,6 @@
           WORDPRESS_DB_USER: "{{ mysql_user }}"
           WORDPRESS_DB_PASSWORD: "{{ mysql_password }}"
           WORDPRESS_DB_NAME: "{{ mysql_database }}"
+        volumes:
+          - wp_data:/var/www/html
         restart_policy: always
