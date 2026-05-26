@@ -1,0 +1,37 @@
+pipeline {
+    agent { label 'docker-agent' }
+    
+    environment {
+        CONTAINER_PASS = credentials('my-secret-password')
+        GITHUB_REPO    = 'https://github.com/livshyts-diana/devops-contest.git'
+    }
+    
+    stages {
+        stage('Prepare Environment') {
+            steps {
+                sh 'apk add --no-cache git docker-cli'
+            }
+        }
+        
+        stage('Clone Repository') {
+            steps {
+                deleteDir()
+                sh "git clone ${GITHUB_REPO} ."
+            }
+        }
+        
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t devops-contest-image:latest -f Task4/Dockerfile Task4/'
+            }
+        }
+        
+        stage('Run Container with Secret') {
+            steps {
+                sh 'docker rm -f contest-app-run || true'
+                sh 'docker run -d --name contest-app-run -e PASSWORD=$CONTAINER_PASS devops-contest-image:latest'
+                sh 'docker ps | grep contest-app-run'
+            }
+        }
+    }
+}

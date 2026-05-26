@@ -1,0 +1,45 @@
+---
+- name: Deploy Jenkins Master Infrastructure
+  hosts: localhost
+  connection: local
+  become: true
+
+  tasks:
+    - name: Ensure aptitude is installed
+      apt:
+        name: aptitude
+        state: present
+        update_cache: yes
+
+    - name: Install required system packages
+      apt:
+        pkg:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+          - python3-pip
+        state: latest
+
+    - name: Ensure Docker Core is installed
+      apt:
+        name: docker.io
+        state: present
+
+    - name: Create Jenkins Network
+      docker_network:
+        name: jenkins_network
+        state: present
+
+    - name: Run Jenkins Master Container
+      docker_container:
+        name: jenkins-master
+        image: jenkins/jenkins:lts
+        state: started
+        restart_policy: always
+        network_mode: jenkins_network
+        ports:
+          - "8080:8080"
+          - "50000:50000"
+        volumes:
+          - "jenkins_home:/var/jenkins_home"
